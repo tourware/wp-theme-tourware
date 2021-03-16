@@ -102,8 +102,6 @@ abstract class AbstractListing extends Widget
                 'ajaxurl' => admin_url('admin-ajax.php'),
             )
         );
-
-        wp_enqueue_script('lazysizes-script');
     }
 
     protected function _register_controls() {
