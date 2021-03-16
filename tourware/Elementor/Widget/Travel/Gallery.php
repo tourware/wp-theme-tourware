@@ -24,6 +24,10 @@ class Gallery extends Widget
         return __( 'Travel Gallery', 'tourware' );
     }
 
+    public function get_script_depends() {
+        return [ 'tourware-js' ];
+    }
+
     /**
      * @param array $instance
      */
