@@ -529,11 +529,14 @@ class Dates extends AbstractAccordion {
             $end = date_create($date->end);
             $dates_value = $start->format('d.m.Y').'-'.$end->format('d.m.Y');
             $price_value = number_format($date->price, 0, ',', '.');
+            $dates_str = date_i18n($date_format, strtotime($date->start)).' - '.date_i18n($date_format, strtotime($date->end));
+            $end->modify("+1 days");
+            $days = date_diff($start, $end)->format('%a');
 
             $tab_title = '<div class="col-auto"><div class="checkbox"><i class="far fa-circle"></i></div></div>';
             $tab_title .= '<div class="col"><div class="row">';
-            $tab_title .= '<div class="dates" data-value="'.$dates_value.'">'.date_i18n($date_format, strtotime($date->start)).' - '.date_i18n($date_format, strtotime($date->end)).'</div>';
-            $tab_title .= '<div class="days">'.date_diff($start, $end)->format('%d').' Tage</div>';
+            $tab_title .= '<div class="dates" data-value="'.$dates_value.'">'.$dates_str.'</div>';
+            $tab_title .= '<div class="days">'.$days.' Tage</div>';
 
 
             $free_places = $date->maxPax - $date->bookedPax;
