@@ -71,7 +71,7 @@ class Details extends AbstractDetails {
         } elseif ($settings['type'] == 'tags' && !empty($settings['tags'])) {
             $tags = $item_data->getTags();
             foreach ($tags as $tag) {
-                if (in_array($tag->id, $settings['tags']))
+                if (in_array($tag->name, $settings['tags']))
                     $content[] =  $tag->name;
             }
         } elseif ($settings['type'] == 'persons') {
