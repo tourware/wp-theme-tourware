@@ -141,7 +141,8 @@ class Itinerary extends AbstractAccordion {
                     );
                     $image_url = \Cloudinary::cloudinary_url($item->brick->images[0]->image, $cloudinary_options);
                 }
-                $tab_content .= '<img class="itinerary-brick-img" src="'. $image_url .'" alt="'. $item->brick->title .'">';
+                $image_title = empty($item->brick->images[0]->title) ? '' : $item->brick->images[0]->title;
+                $tab_content .= '<img class="itinerary-brick-img" src="'. $image_url .'" alt="'. $image_title .'">';
             }
             $tab_content .= $item->brick->description;
 
