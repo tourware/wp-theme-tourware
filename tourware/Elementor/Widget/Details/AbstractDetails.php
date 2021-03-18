@@ -109,7 +109,7 @@ class AbstractDetails extends Widget
         $this->addItemsListRepeater('contact_fields_list', $contact_fields, ['type' => 'contact_person']);
 
         $tags_taxomomy = get_terms(['taxonomy' => 'tytotags', 'hide_empty' => false]);
-        $tags = wp_list_pluck( $tags_taxomomy, 'name', 'id' );
+        $tags = wp_list_pluck( $tags_taxomomy, 'name', 'name' );
         $this->add_control(
             'tags',
             [
