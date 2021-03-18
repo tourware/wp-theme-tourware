@@ -585,9 +585,9 @@ class Dates extends AbstractAccordion {
             $tab_content = '<div class="date-content buttons-'.($settings['date_buttons_position']).'">';
             $tab_content .= '<div class="date-description">';
             if ($date->note) $tab_content .= '<div class="note">'.$date->note.'</div>';
-            $tab_content .= '<h6>Zuschläge / Ermäßigungen</h6>';
-            $tab_content .= '<div>* basierend auf dem Basispreis (1 Erwachsener im Doppelzimmer)</div>';
             if ($date->singleRoomSurcharge) {
+                $tab_content .= '<div class="heading-surcharge">Zuschläge / Ermäßigungen
+                <div>* basierend auf dem Basispreis (1 Erwachsener im Doppelzimmer)</div></div>';
                 $tab_content .= '<div class="surcharge"><span class="h6-style">Einzelzimmer:</span> '.number_format($date->singleRoomSurcharge, 0, ',', '.').'&nbsp;€</div>';
             }
             if ($date->description) $tab_content .= '<div class="description">'.$date->description.'</div>';
