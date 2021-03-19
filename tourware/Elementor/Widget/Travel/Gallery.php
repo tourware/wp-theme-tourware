@@ -34,7 +34,7 @@ class Gallery extends Widget
     protected function render( $instance = [] )
     {
         $repository = \Tourware\Repository\Travel::getInstance();
-        $record = $repository->findOneByPostId(49);
+        $record = $repository->findOneByPostId(get_the_ID());
         $config = $this->get_settings_for_display();
 
         echo '<div class="vue-widget-wrapper">
