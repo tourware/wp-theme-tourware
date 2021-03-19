@@ -12,12 +12,7 @@
                 <span class="price"><?php echo $settings['price_prefix'].number_format($price, 0, ',', '.').$settings['price_suffix']; ?></span>
             <?php } ?>
             <a href="<?php the_permalink(); ?>">
-                <img <?php if ($settings['layout'] !== 'carousel') { ?>
-                    class="lazyload"
-                <?php } else { ?>
-                    class="tns-lazy tns-lazy-img"
-                <?php } ?>
-                    data-src="<?php echo $img_src ?>"
+                <img src="<?php echo $img_src ?>"
                     alt="<?php esc_html_e($title) ?>">
             </a>
             <?php if (isset($badge) && !empty($badge)) { ?>
