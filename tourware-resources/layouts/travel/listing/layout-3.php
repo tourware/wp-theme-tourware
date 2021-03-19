@@ -11,12 +11,7 @@
         <div class="tour-head">
             <a class="tour-image" href="<?php the_permalink() ?>">
                 <div class="image-holder">
-                    <img <?php if ($settings['layout'] !== 'carousel') { ?>
-                        class="lazyload"
-                    <?php } else { ?>
-                        class="tns-lazy tns-lazy-img"
-                    <?php } ?>
-                        data-src="<?php echo $img_src ?>"
+                    <img src="<?php echo $img_src ?>"
                         alt="<?php esc_html_e($title) ?>">
                     <?php echo $badge_html ?>
                 </div>

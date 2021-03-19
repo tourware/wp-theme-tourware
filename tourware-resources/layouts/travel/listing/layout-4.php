@@ -9,12 +9,7 @@
         <?php /*HEAD*/ ?>
         <div class="tour-head">
             <a href="<?php the_permalink(); ?>" class="tour-image">
-                <img <?php if ($settings['layout'] !== 'carousel') { ?>
-                    class="lazyload"
-                <?php } else { ?>
-                    class="tns-lazy tns-lazy-img"
-                <?php } ?>
-                    data-src="<?php echo $img_src ?>"
+                <img src="<?php echo $img_src ?>"
                     alt="<?php esc_html_e($title) ?>">
             </a>
         </div>
