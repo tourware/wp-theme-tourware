@@ -4,6 +4,7 @@ namespace Tourware\Elementor;
 
 use Elementor\Plugin;
 use ElementorTyto\Widgets\Widget_Advanced_Tyto_List;
+use Tourware\Elementor\Widget\Listing\AbstractListing;
 use Tourware\Path;
 
 /**

@@ -27,6 +27,8 @@ function add_tyto_items($page_num, trigger) {
         post_ID: post_id
     };
 
+    console.log(data);
+
     ajaxRunning = true;
     jQuery.ajax({
         url: TytoAjaxVars.ajaxurl,
@@ -34,7 +36,7 @@ function add_tyto_items($page_num, trigger) {
         method: 'post',
         data: data,
         success: function (data) {
-            $container.find('div.page-numbers').replaceWith(data.pagination);
+            $container.find('ul.page-numbers, div.page-numbers').replaceWith(data.pagination);
             var $tours_content = $container.find('.tours-content');
             $container.removeClass('loading');
             jQuery('.autocompete-result').remove();
