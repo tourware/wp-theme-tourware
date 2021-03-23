@@ -68,7 +68,6 @@ export default {
 
         },
         paginate (posts) {
-            console.log(this.config.pagination);
             let page = this.page;
             let perPage = this.perPage;
             let from; let to;
