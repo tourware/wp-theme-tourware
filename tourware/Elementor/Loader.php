@@ -2,9 +2,9 @@
 
 namespace Tourware\Elementor;
 
+use Elementor\Icons_Manager;
 use Elementor\Plugin;
-use ElementorTyto\Widgets\Widget_Advanced_Tyto_List;
-use Tourware\Elementor\Widget\Listing\AbstractListing;
+use Tourware\Elementor\Widget\Listing\AbstractVueListing;
 use Tourware\Path;
 
 /**
@@ -54,6 +54,8 @@ class Loader {
         add_action('wp_ajax_nopriv_search_autocomplete', [ $this, 'search_autocomplete' ]);
         add_action('wp_ajax_adv_list_pagination', [$this, 'adv_list_pagination']);
         add_action('wp_ajax_nopriv_adv_list_pagination', [$this, 'adv_list_pagination']);
+        add_action('wp_ajax_listing_get_posts', [$this, 'listing_get_posts']);
+        add_action('wp_ajax_nopriv_listing_get_posts', [$this, 'listing_get_posts']);
         add_action('wp_ajax_multistep_mail_send', [$this, 'multistep_mail_send']);
         add_action('wp_ajax_nopriv_multistep_mail_send', [$this, 'multistep_mail_send']);
 
@@ -409,6 +411,50 @@ class Loader {
         }
 
         return false;
+    }
+
+    public static function listing_get_posts() {
+        $config = wp_unslash($_POST['config']);
+        $widget_id = $config['widget_id'];
+        $post_id = $config['post_id'];
+
+        $elementor = Plugin::instance();
+        if ( version_compare( ELEMENTOR_VERSION, '2.6.0', '>=' ) ) {
+            $elements = $elementor->documents->get( $post_id )->get_elements_data();
+        } else {
+            $elements = $elementor->db->get_plain_editor( $post_id );
+        }
+        $widget_element = Loader::tyto_find_element_recursive( $elements, $widget_id );
+        if ( !empty($widget_element)) $widget = $elementor->elements_manager->create_element_instance( $widget_element );
+        $settings = $widget->get_settings();
+
+        $args = wp_unslash($_POST['args']);
+
+        if (isset($args['meta_query']['search_tag']))
+            $args['meta_query']['search_tag']['relation'] = 'OR';
+
+        if (isset($args['s'])) {
+            $post_ids = Loader::getPostIDsByKeywords($args['s']);
+            $args['post__in'] = $post_ids;
+            unset($args['s']);
+        }
+
+        $args['paged'] = $_POST['num'];
+
+        $query = new \WP_Query( $args );
+
+        if ($args['post_type'] === 'tytotravels') {
+            $repository = \Tourware\Repository\Travel::getInstance();
+        }
+        $posts = [];
+        while ( $query->have_posts() ):
+            $query->the_post();
+            $record = $repository->findOneByPostId(get_the_ID());
+            $posts[] = AbstractVueListing::getListItemData($record, $settings);
+        endwhile;
+
+        echo json_encode($posts);
+        die;
     }
 
     public static function renderListPagination($query, $settings) {

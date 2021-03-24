@@ -1,99 +1,129 @@
 <template>
-    <div :class="['advanced-tyto-list', config.classes]">
-        <div class="tours-content">
-            <component v-for="post in displayedPosts" v-bind:key="post.key" :is="config.layout_name" :post="post" :config="config"></component>
+    <div class="advanced-tyto-list">
+        <select v-if="config.filter_destinations" v-model="selectedDestination">
+            <option v-for="destination in config.filter_destinations" :value="destination">{{destination}}</option>
+        </select>
+        <div :class="[config.classes]">
+            <div class="tours-content">
+                <component v-for="post in displayedPosts" v-bind:key="post.key" :is="config.layout_name" :post="post"
+                           :config="config"></component>
+            </div>
         </div>
-        <nav aria-label="Page navigation example" :class="['tyto-pagination']">
+        <nav aria-label="Page navigation example" :class="['listing-pagination']">
             <ul v-if="config.pagination === 'numbers'" class="page-numbers numbers">
                 <li class="page-item">
                     <a class="page-numbers" v-if="page !== 1" @click="page--"> Previous </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-numbers" v-for="pageNumber in pages" @click="page = pageNumber" :class="{current: page === pageNumber}"> {{pageNumber}} </a>
+                    <a class="page-numbers" v-for="pageNumber in pages" @click="page = pageNumber"
+                       :class="{current: page === pageNumber}"> {{pageNumber}} </a>
                 </li>
                 <li class="page-item">
                     <a @click="page++" v-if="page < pages.length" class="page-numbers"> Next </a>
                 </li>
             </ul>
             <div v-if="config.pagination === 'load_more'" class="page-numbers load-more">
-                <a @click="page++" v-if="page < pages.length" class="elementor-button page-numbers">{{config.load_more_text}}</a>
+                <a @click="page++" v-if="page < numberOfPages && numberOfPages > 1 || 1" class="elementor-button page-numbers">{{config.load_more_text}}</a>
             </div>
         </nav>
     </div>
 </template>
 
 <script>
-export default {
-  props: {
-    posts: {
-      type: Array
-    },
-    config: {
-      type: Object
-    }
-  },
-    data () {
-        return {
-            page: 1,
-            perPage: this.config.per_page,
-            pages: [],
-        }
-    },
-    methods:{
-        getPosts () {
+    var j = jQuery.noConflict();
+    export default {
+        props: {
+            posts: {
+                type: Array
+            },
+            config: {
+                type: Object
+            },
+            args: {
+                type: Object
+            },
 
         },
-        setPages () {
-            let numberOfPages = Math.ceil(this.posts.length / this.perPage);
-            let end_size = 1;
-            let mid_size = 2;
-            let dots = false;
-            if (numberOfPages > 1) {
-                for (let index = 1; index <= numberOfPages; index++) {
-                    this.pages.push(index);
-                    // if (this.page === index) {
-                    //     this.pages.push(index);
-                    //     dots = true;
-                    // } else {
-                    //     if (index <= end_size || (index >= this.page - mid_size && index <= this.page + mid_size) || index > numberOfPages - end_size) {
-                    //         this.pages.push(index);
-                    //         dots = true;
-                    //     } else if (dots) {
-                    //         this.pages.push('...');
-                    //         dots = false;
-                    //     }
-                    // }
+        data() {
+            return {
+                displayedPosts: this.posts,
+                page: 1,
+                perPage: this.config.per_page,
+                pages: [],
+                selectedDestination: '',
+                search_val: '',
+            }
+        },
+        methods: {
+            searchcall: function (newValue) {
+                let request = {
+                    action:'listing_get_posts',
+                        num: this.page,
+                        args: this.args,
+                        config: this.config
+                };
+
+                let self = this;
+
+                j.post(TytoAjaxVars.ajaxurl, request).always(function(response){
+                    response = JSON.parse(response); // Add this line
+                    console.log(response);
+                    if (request.config.pagination === 'numbers' || self.page === 1) {
+                        self.displayedPosts = response;
+                    } else if (request.config.pagination === 'load_more') {
+                        self.displayedPosts = self.displayedPosts.concat(response);
+                    }
+                });
+            },
+            setPages() {
+                if (this.numberOfPages > 1) {
+                    for (let index = 1; index <= this.numberOfPages; index++) {
+                        this.pages.push(index);
+                    }
                 }
+            },
+            paginate(posts) {
+                let page = this.page;
+                let perPage = this.perPage;
+                let from;
+                let to;
+                if (this.config.pagination === 'numbers') {
+                    from = (page * perPage) - perPage;
+                    to = (page * perPage);
+                } else if (this.config.pagination === 'load_more') {
+                    from = 0;
+                    to = (page * perPage);
+                }
+                return posts.slice(from, to);
             }
+        },
+        created() {
 
         },
-        paginate (posts) {
-            let page = this.page;
-            let perPage = this.perPage;
-            let from; let to;
-            if (this.config.pagination === 'numbers') {
-                from = (page * perPage) - perPage;
-                to = (page * perPage);
-            } else if (this.config.pagination === 'load_more') {
-                from = 0;
-                to = (page * perPage);
+        computed: {
+            numberOfPages() {
+                return Math.ceil(this.posts.length / this.perPage);
             }
-            return  posts.slice(from, to);
-        }
-    },
-    computed: {
-        displayedPosts () {
-            return this.paginate(this.posts);
-        }
-    },
-    watch: {
-
-    },
-    mounted() {
-        this.setPages();
-    },
-    filters: {
-
+        },
+        watch: {
+            search_val: function(newValue){
+                this.args.s = newValue;
+                this.searchcall()
+            },
+            page: function(newValue){
+                this.searchcall()
+            },
+            selectedDestination: function(newValue) {
+                this.page = 1;
+                this.args.tytocountries = newValue;
+                this.searchcall()
+            }
+        },
+        mounted() {
+            if (this.config.pagination === 'numbers') this.setPages();
+        },
+        filters: {}
     }
-}
+
+
 </script>

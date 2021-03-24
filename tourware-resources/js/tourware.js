@@ -1,4 +1,3 @@
-import TravelListingItemLayout1 from "../vue/travel/listing/TravelListingItemLayout1";
 import Vue from "vue";
 
 Vue.component('travel-gallery', {
@@ -16,19 +15,6 @@ Vue.component('travel-listing', {
     mounted: function () {
     }
 })
-
-Vue.component('travel-listing-item-layout-1', TravelListingItemLayout1)
-Vue.component('travel-listing-item-layout-2', TravelListingItemLayout2)
-Vue.component('travel-listing-item-layout-3', TravelListingItemLayout3)
-Vue.component("dtag", {
-    props: {
-        tag: String
-    },
-    functional: true,
-    render(h, context) {
-        return h(context.props.tag, context.data, context.children);
-    }
-});
 
 jQuery( function( $ ) {
     if ( window.elementorFrontend ) {

@@ -91,8 +91,9 @@ abstract class AbstractVueListing extends Widget
         $query = new \WP_Query( $args );
 
         $parts = explode('##', $settings['template']);
-//
-//        $config = $settings;
+
+        $config['widget_id'] = $this->get_id();
+        $config['post_id'] = get_the_ID();
         $config['layout_name'] = 'travel-listing-item-'.$parts[2];
         $config['classes'] = 'tours-layout-' . $settings['layout']
             .' ht-grid ht-grid-' . $settings['col'] . ' ht-grid-tablet-' . $settings['col_tablet'] . ' ht-grid-mobile-' . $settings['col_mobile']
@@ -126,6 +127,14 @@ abstract class AbstractVueListing extends Widget
             $config['read_more_text'] = $settings['read_more_text'];
         }
 
+        if ($settings['show_filter_destinations']) {
+            $countries_taxomomy = get_terms(['taxonomy' => 'tytocountries', 'hide_empty' => false]);
+            $config['filter_destinations'] = wp_list_pluck( $countries_taxomomy, 'name', 'slug' );
+        }
+        if ($settings['show_filter_categories']) {
+            $config['filter_categories'] = $settings['filter_categories'];
+
+        }
 
 
         $posts = [];
@@ -136,25 +145,28 @@ abstract class AbstractVueListing extends Widget
         endwhile;
 
         echo '<div class="vue-widget-wrapper">
-                <travel-listing :posts=\'' . json_encode($posts, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) . '\' :config=\'' . json_encode($config, JSON_HEX_APOS|JSON_HEX_QUOT) . '\'></travel-listing>
+                <travel-listing :posts=\'' . json_encode($posts, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) . '\' 
+                :config=\'' . json_encode($config, JSON_HEX_APOS|JSON_HEX_QUOT) . '\' 
+                :args=\'' . json_encode($args, JSON_HEX_APOS|JSON_HEX_QUOT) . '\'></travel-listing>
             </div>';
         wp_reset_postdata();
     }
 
     public function _enqueue_styles() {
-        wp_enqueue_script('throttle-debounce', \Tourware\Path::getResourcesUri() . 'js/widget/abstract/listing/jquery-throttle-debounce.js', ['jquery']);
-        wp_enqueue_script('tourware-widget-abstract-listing-js', \Tourware\Path::getResourcesUri() . 'js/widget/abstract/listing/script.js', ['jquery', 'throttle-debounce']);
-
-        wp_localize_script('tourware-widget-abstract-listing-js', 'TytoAjaxVars',
-            array(
-                'ajaxurl' => admin_url('admin-ajax.php'),
-            )
-        );
+//        wp_enqueue_script('throttle-debounce', \Tourware\Path::getResourcesUri() . 'js/widget/abstract/listing/jquery-throttle-debounce.js', ['jquery']);
+//        wp_enqueue_script('tourware-widget-abstract-listing-js', \Tourware\Path::getResourcesUri() . 'js/widget/abstract/listing/script.js', ['jquery', 'throttle-debounce']);
+//
+//        wp_localize_script('tourware-widget-abstract-listing-js', 'TytoAjaxVars',
+//            array(
+//                'ajaxurl' => admin_url('admin-ajax.php'),
+//            )
+//        );
     }
 
     protected function _register_controls() {
         /* CONTENT */
         $this->sectionLayout();
+        $this->sectionFiltersAndSorting();
         $this->sectionQuery();
         $this->sectionCardLayout();
         $this->sectionPagination();
@@ -251,6 +263,60 @@ abstract class AbstractVueListing extends Widget
                 'autoplay' => 'yes'
             )
         ) );
+
+        $this->end_controls_section();
+    }
+
+    private function sectionFiltersAndSorting() {
+        $this->start_controls_section(
+            'filters_and_sorting',
+                [
+                    'label' => __('Filters & Sorting', 'tourware')
+                ]
+        );
+
+        $this->add_control(
+            'show_filter_destinations',
+            [
+                'type'         => Controls_Manager::SWITCHER,
+                'label'        => esc_html__( 'Show Destinations Filter' ),
+                'default'      => '',
+                'label_on'     => esc_html__( 'Yes' ),
+                'label_off'    => esc_html__( 'No' ),
+            ]
+        );
+
+        $this->add_control(
+            'show_filter_categories',
+            [
+                'type'         => Controls_Manager::SWITCHER,
+                'label'        => esc_html__( 'Show Categories Filter' ),
+                'default'      => '',
+                'label_on'     => esc_html__( 'Yes' ),
+                'label_off'    => esc_html__( 'No' ),
+            ]
+        );
+
+        $tags_taxomomy = get_terms(['taxonomy' => 'tytotags', 'hide_empty' => false]);
+        $tags = wp_list_pluck( $tags_taxomomy, 'name', 'slug' );
+        $this->add_control( 'filter_categories', array(
+            'type'     => Controls_Manager::SELECT2,
+            'label'    => esc_html__( 'Categories for Filtering' ),
+            'multiple' => true,
+            'options'  => $tags,
+            'condition' => ['show_filter_categories' => 'yes']
+        ) );
+
+        $this->add_control(
+            'show_sorting',
+            [
+                'type'         => Controls_Manager::SWITCHER,
+                'label'        => esc_html__( 'Show Sorting' ),
+                'default'      => '',
+                'label_on'     => esc_html__( 'Yes' ),
+                'label_off'    => esc_html__( 'No' ),
+            ]
+        );
 
         $this->end_controls_section();
     }
@@ -1353,7 +1419,7 @@ abstract class AbstractVueListing extends Widget
             'post_type'           => $this->getPostTypeName(),
             'ignore_sticky_posts' => 1,
             'post_status'         => 'publish',
-            'posts_per_page'      => -1,
+            'posts_per_page'      => $settings['per_page'],
             'orderby'             => $settings['orderby'],
             'order'               => $settings['order'],
             'paged'               => $paged,
@@ -1428,9 +1494,8 @@ abstract class AbstractVueListing extends Widget
     public static function getListItemData($item_data, $settings) {
         $data = [];
         $img_width = $img_height = 1200 / $settings['col'];
-        $data['img_width'] = $img_width;
 
-        $data['optional_attributes_html'] = $settings[ 'open_new_tab' ] === 'yes' ? 'target="_blank"' : '';
+//        $data['optional_attributes_html'] = $settings[ 'open_new_tab' ] === 'yes' ? 'target="_blank"' : '';
 
         /*VARIABLES*/
         if ($settings['show_title']) {
