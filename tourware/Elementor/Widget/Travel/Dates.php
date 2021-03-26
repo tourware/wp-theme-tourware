@@ -77,8 +77,16 @@ class Dates extends AbstractAccordion {
         $this->add_control('inquiry_button_text',
             [
                 'type'      => Controls_Manager::TEXT,
-                'label'     => esc_html__( 'Inquiry Button text', 'tourware' ),
+                'label'     => esc_html__( 'Inquiry Button Text', 'tourware' ),
                 'default'   => __('Inquiry', 'tourware'),
+                'condition' => [ 'show_inquiry_button' => 'yes' ]
+            ]
+        );
+
+        $this->add_control('inquiry_link',
+            [
+                'type'      => Controls_Manager::URL,
+                'label'     => esc_html__( 'Inquiry Button Link', 'tourware' ),
                 'condition' => [ 'show_inquiry_button' => 'yes' ]
             ]
         );
@@ -621,7 +629,10 @@ class Dates extends AbstractAccordion {
             if ($settings['show_inquiry_button'] === 'yes' || $settings['show_book_button'] === 'yes') {
                 $tab_content .= '<div class="date-buttons">';
                 if ($settings['show_inquiry_button'] === 'yes') {
-                    $tab_content .= '<a href="#" class="elementor-button inquiry-button">'.$settings['inquiry_button_text'].'</a>';
+                    $tab_content .= '<a href="'.$settings['inquiry_link']['url'].'?postId='.$post.'&dates='.$dates_value.'" class="elementor-button inquiry-button"'
+                        .($settings['inquiry_link']['is_external'] === 'on' ? ' target="_blank"' : '')
+                        .($settings['inquiry_link']['nofollow'] === 'on' ? ' rel="nofollow"' : '')
+                        .'>'.$settings['inquiry_button_text'].'</a>';
                 }
                 if ($settings['show_book_button'] === 'yes' && $free_places > 0) {
                     $tab_content .= '<a href="#" class="elementor-button book-button">'.$settings['book_button_text'].'</a>';
