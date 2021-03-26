@@ -122,6 +122,32 @@ class Dates extends AbstractAccordion {
         );
 
         $this->add_control(
+            'heading_surcharge',
+            [
+                'label' => __( 'Surcharge', 'tourware' ),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'surcharge_title',
+            [
+                'label'   => esc_html__( 'Title', 'tourware' ),
+                'type'    => Controls_Manager::TEXT,
+                'default' => 'Zuschläge / Ermäßigungen'
+            ]
+        );
+        $this->add_control(
+            'surcharge_subtitle',
+            [
+                'label'   => esc_html__( 'Subtitle', 'tourware' ),
+                'type'    => Controls_Manager::TEXT,
+                'default' => '* basierend auf dem Basispreis (1 Erwachsener im Doppelzimmer)'
+            ]
+        );
+
+        $this->add_control(
             'heading_places',
             [
                 'label' => __( 'Places Indicator', 'tourware' ),
@@ -586,8 +612,7 @@ class Dates extends AbstractAccordion {
             $tab_content .= '<div class="date-description">';
             if ($date->note) $tab_content .= '<div class="note">'.$date->note.'</div>';
             if ($date->singleRoomSurcharge) {
-                $tab_content .= '<div class="heading-surcharge">Zuschläge / Ermäßigungen
-                <div>* basierend auf dem Basispreis (1 Erwachsener im Doppelzimmer)</div></div>';
+                $tab_content .= '<div class="heading-surcharge">'.$settings['surcharge_title'].'<div>'.$settings['surcharge_subtitle'].'</div></div>';
                 $tab_content .= '<div class="surcharge"><span class="h6-style">Einzelzimmer:</span> '.number_format($date->singleRoomSurcharge, 0, ',', '.').'&nbsp;€</div>';
             }
             if ($date->description) $tab_content .= '<div class="description">'.$date->description.'</div>';
