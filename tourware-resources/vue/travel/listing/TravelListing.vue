@@ -1,16 +1,18 @@
 <template>
     <div :class="['advanced-tyto-list', config.layout_class]">
-        <select v-if="config.filter_destinations" v-model="selectedDestination">
-            <option value="">{{config.filter_destinations_text}}</option>
-            <option v-for="(destination, dest_index) in config.filter_destinations" :value="dest_index">{{destination}}</option>
-        </select>
-        <select v-if="config.filter_categories" v-model="selectedCategory">
-            <option value="">{{config.filter_categories_text}}</option>
-            <option v-for="(category, cat_index) in config.filter_categories" :value="cat_index">{{category}}</option>
-        </select>
-        <select v-if="config.sorting" v-model="selectedSorting">
-            <option v-for="(sorting, sort_index) in config.sorting" :value="sort_index">{{sorting}}</option>
-        </select>
+        <div class="filters">
+            <Select2 v-if="config.filter_destinations" v-model="selectedDestination"
+                     :options="this.config.filter_destinations"
+                     :settings="{width: '250px', allowClear: true, placeholder: config.filter_destinations_text, dropdownAutoWidth: true}">
+            </Select2>
+            <Select2 v-if="config.filter_categories" v-model="selectedCategory"
+                     :options="this.config.filter_categories"
+                     :settings="{width: '250px', allowClear: true, placeholder: config.filter_categories_text, dropdownAutoWidth: true}">
+            </Select2>
+<!--            <select v-if="config.sorting" v-model="selectedSorting">-->
+<!--                <option v-for="(sorting, sort_index) in config.sorting" :value="sort_index">{{sorting}}</option>-->
+<!--            </select>-->
+        </div>
         <div :class="[config.classes]">
             <div class="tours-content">
                 <component v-for="post in displayedPosts" v-bind:key="post.key" :is="config.layout_name" :post="post"
@@ -38,8 +40,10 @@
 </template>
 
 <script>
+    import Select2 from 'v-select2-component';
     var j = jQuery.noConflict();
     export default {
+        components: {Select2},
         props: {
             posts: {
                 type: Array
@@ -87,6 +91,7 @@
                 });
             },
             setPages(pages_number) {
+                this.pages = [];
                 if (pages_number > 1) {
                     for (let index = 1; index <= pages_number; index++) {
                         this.pages.push(index);
@@ -133,6 +138,7 @@
         },
         mounted() {
             if (this.config.pagination === 'numbers') this.setPages(this.config.pages_num);
+            // this.setDestinations();
         },
         filters: {}
     }

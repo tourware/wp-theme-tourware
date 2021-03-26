@@ -33,6 +33,7 @@
     "sass": "^1.32.4",
     "sass-loader": "8.*",
     "swiper": "^6.4.8",
+    "v-select2-component": "^0.4.7",
     "vue": "^2.6.12",
     "vue-loader": "15.9.5",
     "vue-template-compiler": "^2.6.12",

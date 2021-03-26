@@ -130,12 +130,18 @@ abstract class AbstractVueListing extends Widget
 
         if ($settings['show_filter_destinations']) {
             $countries_taxomomy = get_terms(['taxonomy' => 'tytocountries', 'hide_empty' => false]);
-            $config['filter_destinations'] = wp_list_pluck( $countries_taxomomy, 'name', 'slug' );
+            $countries = wp_list_pluck( $countries_taxomomy, 'name', 'slug' );
+            foreach ($countries as $k => $v) {
+                $config['filter_destinations'][] = ['id' => $k, 'text' => $v];
+            }
             $config['filter_destinations_text'] = $settings['filter_destinations_text'];
         }
         if ($settings['show_filter_categories']) {
             foreach ($settings['filter_categories'] as $settings_category) {
-                $config['filter_categories'][$settings_category] = get_term_by( 'slug', $settings_category, 'tytotags' )->name;
+                $config['filter_categories'][] =[
+                    'id' => $settings_category,
+                    'text' => get_term_by( 'slug', $settings_category, 'tytotags' )->name
+                ];
             }
             $config['filter_categories_text'] = $settings['filter_categories_text'];
         }
