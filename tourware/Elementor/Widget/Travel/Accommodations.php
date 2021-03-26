@@ -56,6 +56,16 @@ class Accommodations extends AbstractAccordion {
         );
 
         $this->add_control(
+            'show_image',
+            [
+                'label' => __( 'Show Image', 'tourware' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => __('Show', 'elementor-pro'),
+                'label_off' => __('Hide', 'elementor-pro'),
+            ]
+        );
+
+        $this->add_control(
             'heading_stay_options',
             [
                 'label' => __( 'Stay', 'tourware' ),
@@ -185,7 +195,7 @@ class Accommodations extends AbstractAccordion {
 
         $this->end_controls_section();
 
-        $this->addControlGroup(['id' => 'style_image', 'type' => 'image']);
+        $this->addControlGroup(['id' => 'style_image', 'type' => 'image', 'condition' => ['show_image' => 'yes']]);
     }
 
     protected function getTemplateData() {
@@ -199,22 +209,24 @@ class Accommodations extends AbstractAccordion {
         foreach ($accommodations as $accommodation) {
 //            print_r($accommodation);
             $tab_content = '';
-            $imgs_lngth = sizeof($accommodation->accommodation->images);
-            if ($imgs_lngth > 0) {
-                if (strpos($accommodation->accommodation->images[0]->image, 'unsplash')) {
-                    $unsplash_options = '?fm=jpg&crop=focalpoint&fit=crop&h=300&w=700';
-                    $img_array = explode("?", $accommodation->accommodation->images[0]->image);
-                    $image_url = $img_array[0] . $unsplash_options;
-                } else {
-                    $cloudinary_options = array(
-                        "secure" => true,
-                        "width" => 300,
-                        "height" => 400,
-                        "crop" => "thumb"
-                    );
-                    $image_url = \Cloudinary::cloudinary_url($accommodation->accommodation->images[0]->image, $cloudinary_options);
+            if ($settings['show_image'] === 'yes') {
+                $imgs_lngth = sizeof($accommodation->accommodation->images);
+                if ($imgs_lngth > 0) {
+                    if (strpos($accommodation->accommodation->images[0]->image, 'unsplash')) {
+                        $unsplash_options = '?fm=jpg&crop=focalpoint&fit=crop&h=300&w=700';
+                        $img_array = explode("?", $accommodation->accommodation->images[0]->image);
+                        $image_url = $img_array[0] . $unsplash_options;
+                    } else {
+                        $cloudinary_options = array(
+                            "secure" => true,
+                            "width" => 300,
+                            "height" => 400,
+                            "crop" => "thumb"
+                        );
+                        $image_url = \Cloudinary::cloudinary_url($accommodation->accommodation->images[0]->image, $cloudinary_options);
+                    }
+                    $tab_content .= '<div class="accommodation-left"><img class="" src="'. $image_url .'" alt="'. $accommodation->accommodation->title .'"></div>';
                 }
-                $tab_content .= '<div class="accommodation-left"><img class="" src="'. $image_url .'" alt="'. $accommodation->accommodation->title .'"></div>';
             }
 
             $tab_content .= '<div class="accommodation-right">';
