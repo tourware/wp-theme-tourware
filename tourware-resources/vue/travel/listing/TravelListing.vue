@@ -1,7 +1,15 @@
 <template>
-    <div class="advanced-tyto-list">
+    <div :class="['advanced-tyto-list', config.layout_class]">
         <select v-if="config.filter_destinations" v-model="selectedDestination">
-            <option v-for="destination in config.filter_destinations" :value="destination">{{destination}}</option>
+            <option value="">{{config.filter_destinations_text}}</option>
+            <option v-for="(destination, dest_index) in config.filter_destinations" :value="dest_index">{{destination}}</option>
+        </select>
+        <select v-if="config.filter_categories" v-model="selectedCategory">
+            <option value="">{{config.filter_categories_text}}</option>
+            <option v-for="(category, cat_index) in config.filter_categories" :value="cat_index">{{category}}</option>
+        </select>
+        <select v-if="config.sorting" v-model="selectedSorting">
+            <option v-for="(sorting, sort_index) in config.sorting" :value="sort_index">{{sorting}}</option>
         </select>
         <div :class="[config.classes]">
             <div class="tours-content">
@@ -23,7 +31,7 @@
                 </li>
             </ul>
             <div v-if="config.pagination === 'load_more'" class="page-numbers load-more">
-                <a @click="page++" v-if="page < numberOfPages && numberOfPages > 1 || 1" class="elementor-button page-numbers">{{config.load_more_text}}</a>
+                <a @click="page++" v-if="page < pages.length && pages.length > 1" class="elementor-button page-numbers">{{config.load_more_text}}</a>
             </div>
         </nav>
     </div>
@@ -48,9 +56,11 @@
             return {
                 displayedPosts: this.posts,
                 page: 1,
-                perPage: this.config.per_page,
                 pages: [],
                 selectedDestination: '',
+                selectedCategory: '',
+                selectedSorting: '',
+                sorting: '',
                 search_val: '',
             }
         },
@@ -69,41 +79,26 @@
                     response = JSON.parse(response); // Add this line
                     console.log(response);
                     if (request.config.pagination === 'numbers' || self.page === 1) {
-                        self.displayedPosts = response;
+                        self.displayedPosts = response.posts;
                     } else if (request.config.pagination === 'load_more') {
-                        self.displayedPosts = self.displayedPosts.concat(response);
+                        self.displayedPosts = self.displayedPosts.concat(response.posts);
                     }
+                    self.setPages(response.pages_num);
                 });
             },
-            setPages() {
-                if (this.numberOfPages > 1) {
-                    for (let index = 1; index <= this.numberOfPages; index++) {
+            setPages(pages_number) {
+                if (pages_number > 1) {
+                    for (let index = 1; index <= pages_number; index++) {
                         this.pages.push(index);
                     }
                 }
             },
-            paginate(posts) {
-                let page = this.page;
-                let perPage = this.perPage;
-                let from;
-                let to;
-                if (this.config.pagination === 'numbers') {
-                    from = (page * perPage) - perPage;
-                    to = (page * perPage);
-                } else if (this.config.pagination === 'load_more') {
-                    from = 0;
-                    to = (page * perPage);
-                }
-                return posts.slice(from, to);
-            }
         },
         created() {
 
         },
         computed: {
-            numberOfPages() {
-                return Math.ceil(this.posts.length / this.perPage);
-            }
+
         },
         watch: {
             search_val: function(newValue){
@@ -117,10 +112,27 @@
                 this.page = 1;
                 this.args.tytocountries = newValue;
                 this.searchcall()
+            },
+            selectedCategory: function(newValue) {
+                this.page = 1;
+                this.args.tytotags = newValue;
+                this.searchcall()
+            },
+            selectedSorting: function(newValue) {
+                if (newValue === 'price_desc') {
+                    this.args.meta_key = 'tytoprice';
+                    this.args.orderby = 'tytoprice_num';
+                    this.args.order = 'DESC'
+                } else if (newValue === 'price_asc') {
+                    this.args.meta_key = 'tytoprice';
+                    this.args.orderby = 'tytoprice_num';
+                    this.args.order = 'ASC'
+                }
+                this.searchcall()
             }
         },
         mounted() {
-            if (this.config.pagination === 'numbers') this.setPages();
+            if (this.config.pagination === 'numbers') this.setPages(this.config.pages_num);
         },
         filters: {}
     }

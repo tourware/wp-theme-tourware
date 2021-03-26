@@ -95,9 +95,10 @@ abstract class AbstractVueListing extends Widget
         $config['widget_id'] = $this->get_id();
         $config['post_id'] = get_the_ID();
         $config['layout_name'] = 'travel-listing-item-'.$parts[2];
+        $config['layout_class'] = $parts[2];
         $config['classes'] = 'tours-layout-' . $settings['layout']
             .' ht-grid ht-grid-' . $settings['col'] . ' ht-grid-tablet-' . $settings['col_tablet'] . ' ht-grid-mobile-' . $settings['col_mobile']
-            .' '.$parts[2];
+            .' ';
         $config['per_page'] = $settings['per_page'];
         $config['pagination'] = $settings['pagi'];
         if ($settings['pagi'] == 'load_more') {
@@ -130,12 +131,25 @@ abstract class AbstractVueListing extends Widget
         if ($settings['show_filter_destinations']) {
             $countries_taxomomy = get_terms(['taxonomy' => 'tytocountries', 'hide_empty' => false]);
             $config['filter_destinations'] = wp_list_pluck( $countries_taxomomy, 'name', 'slug' );
+            $config['filter_destinations_text'] = $settings['filter_destinations_text'];
         }
         if ($settings['show_filter_categories']) {
-            $config['filter_categories'] = $settings['filter_categories'];
-
+            foreach ($settings['filter_categories'] as $settings_category) {
+                $config['filter_categories'][$settings_category] = get_term_by( 'slug', $settings_category, 'tytotags' )->name;
+            }
+            $config['filter_categories_text'] = $settings['filter_categories_text'];
+        }
+        if ($settings['show_sorting']) {
+            $config['sorting'] = [
+                'default' => 'Default',
+                'price_desc' => 'Price High to Low',
+                'price_asc' => 'Price Low to High',
+                'duration_desc' => 'Duration High to Low',
+                'duration_asc' => 'Duration Low to High',
+            ];
         }
 
+        $config['pages_num'] = $query->max_num_pages;
 
         $posts = [];
         while ( $query->have_posts() ):
@@ -285,6 +299,12 @@ abstract class AbstractVueListing extends Widget
                 'label_off'    => esc_html__( 'No' ),
             ]
         );
+        $this->add_control('filter_destinations_text', [
+            'type' => Controls_Manager::TEXT,
+            'label' => esc_html__('Filter Destinations Text', 'tourware'),
+            'default' => __('Reiseziele', 'tourware'),
+            'condition' => ['show_filter_destinations' => 'yes']
+        ]);
 
         $this->add_control(
             'show_filter_categories',
@@ -296,6 +316,13 @@ abstract class AbstractVueListing extends Widget
                 'label_off'    => esc_html__( 'No' ),
             ]
         );
+
+        $this->add_control('filter_categories_text', [
+            'type' => Controls_Manager::TEXT,
+            'label' => esc_html__('Filter Categories Text', 'tourware'),
+            'default' => __('Kategorien', 'tourware'),
+            'condition' => ['show_filter_categories' => 'yes']
+        ]);
 
         $tags_taxomomy = get_terms(['taxonomy' => 'tytotags', 'hide_empty' => false]);
         $tags = wp_list_pluck( $tags_taxomomy, 'name', 'slug' );
@@ -1434,7 +1461,7 @@ abstract class AbstractVueListing extends Widget
 
         // check if there is default advanced search category
         // only on frontend
-        $args['meta_query'] = ['relation' => 'AND'];
+//        $args['meta_query'] = ['relation' => 'AND'];
 
         if ($settings['related'] !== 'yes') {
             $search_tag = $search_str = '';

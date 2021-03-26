@@ -430,6 +430,9 @@ class Loader {
 
         $args = wp_unslash($_POST['args']);
 
+//        echo json_encode($args);
+//        die;
+
         if (isset($args['meta_query']['search_tag']))
             $args['meta_query']['search_tag']['relation'] = 'OR';
 
@@ -453,7 +456,7 @@ class Loader {
             $posts[] = AbstractVueListing::getListItemData($record, $settings);
         endwhile;
 
-        echo json_encode($posts);
+        echo json_encode(['posts' => $posts, 'pages_num' => $query->max_num_pages]);
         die;
     }
 
