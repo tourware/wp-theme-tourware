@@ -30,19 +30,19 @@ class Table extends AbstractTable
 
     public function renderTable($settings)
     {
-        $destinations = $this->getDestinationsForTable($settings['destinations']);
+        $destinations = $this->getDestinationsForTable($settings['destinations'], $settings['airlines']);
         $modal = '';
 
         echo '<table>';
 
         echo '<thead>';
         echo '<th>Zielort</th>';
-        echo '<th>Airline</th>';
+        echo '<th data-orderable="false">Airline</th>';
         echo '<th>Buchungszeitraum</th>';
-        echo '<th>Abflug</th>';
-        echo '<th>Preis ab</th>';
-        echo '<th></th>';
-        echo '<th></th>';
+        echo '<th data-orderable="false">Abflug</th>';
+        echo '<th data-orderable="false">Preis ab</th>';
+        echo '<th data-orderable="false"></th>';
+        echo '<th data-orderable="false"></th>';
         echo '</thead>';
 
         echo '<tbody>';
@@ -206,6 +206,21 @@ class Table extends AbstractTable
         );
     }
 
+    private function getAirlinesForWidget()
+    {
+        global $wpdb;
+
+        return wp_list_pluck(
+            $wpdb->get_results(
+                "SELECT * FROM `web18mts_fpreise_values`
+                WHERE `select_type` = 'airline'
+                AND `select_del` = 0 ORDER BY select_value"
+            ),
+            'select_value',
+            'select_id'
+        );
+    }
+
     private function sectionQuery()
     {
         $this->start_controls_section('section_content_query', [
@@ -219,16 +234,20 @@ class Table extends AbstractTable
             'options' => $this->getDestinationsForWidget(),
         ]);
 
+        $this->add_control('airlines', [
+            'type' => Controls_Manager::SELECT2,
+            'label' => __('Airlines', 'tourware'),
+            'multiple' => true,
+            'options' => $this->getAirlinesForWidget(),
+        ]);
+
         $this->add_control('order_by', [
             'type' => Controls_Manager::SELECT,
             'label' => __('Order By', 'tourware'),
             'default' => 0,
             'options' => [
                 0 => __('Zielort', 'tourware'),
-                1 => __('Airline', 'tourware'),
                 2 => __('Buchungszeitraum', 'tourware'),
-                3 => __('Abflug', 'tourware'),
-                4 => __('Preise ab', 'tourware'),
             ],
         ]);
 
@@ -701,9 +720,12 @@ class Table extends AbstractTable
         $this->end_controls_section();
     }
 
-    private function getDestinationsForTable($landId)
+    private function getDestinationsForTable($landsId, $airlinesId)
     {
         global $wpdb;
+
+        $landsId = !$landsId ? [0] : $landsId;
+        $airlinesId = !$airlinesId ? [0] : $airlinesId;
 
         return $wpdb->get_results(
             "SELECT * FROM web18mts_fpreise as fpreise
@@ -713,7 +735,7 @@ class Table extends AbstractTable
                 ON zielorte.zielort_select_id = fpreise.fpreise_flughafen
             INNER JOIN (SELECT `select_special` as airline_img,`select_value` as airline_name, select_id as airline_select_id FROM web18mts_fpreise_values WHERE `select_type` = 'airline' AND `select_del` = 0) as airline
                 ON airline.airline_select_id = fpreise.fpreise_airline
-            WHERE `fpreise_land` IN (" . implode(",", $landId) . ")
+            WHERE (`fpreise_land` IN (" . implode(",", $landsId) . ") OR `fpreise_airline` IN (" . implode(",", $airlinesId) . "))
                 AND `fpreise_hide` = 0"
         );
     }

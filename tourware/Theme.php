@@ -96,6 +96,7 @@ class Theme
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Destination\Listing() );
 
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Flightprice\Table() );
+            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Flightprice\Title() );
 
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Search() );
         } );
