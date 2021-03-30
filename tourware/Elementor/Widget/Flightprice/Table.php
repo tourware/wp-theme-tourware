@@ -47,19 +47,28 @@ class Table extends AbstractTable
 
         echo '<tbody>';
         foreach ($destinations as $destination) {
+            $button = $this->getButton($destination->fpreise_id);
             $modalClose = '<i class="fa fa-times fp-modal-close"></i>';
             $modal .= '<div class="fp-modal" data-id="' . $destination->fpreise_id . '">';
             $modal .= '<div class="fp-modal-content">' . $modalClose . nl2br($destination->fpreise_besonderheit) . '</div>';
             $modal .= '</div>';
 
+            echo '<tr class="hidden-desktop">';
+            echo '<td colspan="7">' . nl2br($destination->zielort) . '</td>';
+            echo '</tr>';
+
             echo '<tr>';
-            echo '<td>' . nl2br($destination->zielort) . '</td>';
+            echo '<td class="hidden-mobile">' . nl2br($destination->zielort) . '</td>';
             echo '<td><img class="fpreise-airline-img" src="/' . $destination->airline_img . '" width="30" height="30"/></td>';
-            echo '<td>' . nl2br($destination->fpreise_zeitraum) . '</td>';
+            echo '<td class="hidden-mobile">' . nl2br($destination->fpreise_zeitraum) . '</td>';
             echo '<td>' . nl2br($destination->fpreise_abflug) . '</td>';
             echo '<td>' . nl2br($destination->fpreise_flugpreis) . '</td>';
             echo '<td><i class="fa fa-info-circle fp-modal-open" data-id="' . $destination->fpreise_id . '"></i></td>';
-            echo '<td>' . $this->getButton($destination->fpreise_id) . '</td>';
+            echo '<td class="hidden-mobile">' . $button . '</td>';
+            echo '</tr>';
+
+            echo '<tr class="hidden-desktop">';
+            echo '<td colspan="7">' . $button . '</td>';
             echo '</tr>';
         }
         echo '</body>';
@@ -88,35 +97,35 @@ class Table extends AbstractTable
     {
         $settings = $this->get_settings_for_display();
 
-        $this->add_render_attribute('wrapper', 'class', 'fp-ep-button-wrapper');
+        $this->add_render_attribute('wrapper' . $id, 'class', 'fp-ep-button-wrapper');
 
         if (!empty($settings['link']['url'])) {
             $add = stripos($settings['link']['url'], '?') !== false ? '&id=' : '?id=';
-            $this->add_render_attribute('advanced_button', 'href', $settings['link']['url'] . $add . $id);
+            $this->add_render_attribute('advanced_button'. $id, 'href', $settings['link']['url'] . $add . $id);
 
             if ($settings['link']['is_external']) {
-                $this->add_render_attribute('advanced_button', 'target', '_blank');
+                $this->add_render_attribute('advanced_button'. $id, 'target', '_blank');
             }
 
             if ($settings['link']['nofollow']) {
-                $this->add_render_attribute('advanced_button', 'rel', 'nofollow');
+                $this->add_render_attribute('advanced_button'. $id, 'rel', 'nofollow');
             }
 
         }
 
         if ($settings['link']['nofollow']) {
-            $this->add_render_attribute('advanced_button', 'rel', 'nofollow');
+            $this->add_render_attribute('advanced_button'. $id, 'rel', 'nofollow');
         }
 
         if ($settings['onclick']) {
-            $this->add_render_attribute('advanced_button', 'onclick', $settings['onclick_event']);
+            $this->add_render_attribute('advanced_button'. $id, 'onclick', $settings['onclick_event']);
         }
 
         if ($settings['attention_button']) {
-            $this->add_render_attribute('advanced_button', 'class', 'fp-ep-attention-button');
+            $this->add_render_attribute('advanced_button'. $id, 'class', 'fp-ep-attention-button');
         }
 
-        $this->add_render_attribute('advanced_button', 'class', [
+        $this->add_render_attribute('advanced_button'. $id, 'class', [
             'fp-ep-button',
             'fp-ep-button-effect-' . esc_attr($settings['button_effect']),
             'fp-ep-button-size-' . esc_attr($settings['button_size']),
@@ -124,45 +133,45 @@ class Table extends AbstractTable
 
 
         if ($settings['hover_animation']) {
-            $this->add_render_attribute('advanced_button', 'class', 'elementor-animation-' . $settings['hover_animation']);
+            $this->add_render_attribute('advanced_button'. $id, 'class', 'elementor-animation-' . $settings['hover_animation']);
         }
 
         if (!empty($settings['button_css_id'])) {
-            $this->add_render_attribute('advanced_button', 'id', $settings['button_css_id']);
+            $this->add_render_attribute('advanced_button'. $id, 'id', $settings['button_css_id']);
         }
 
-        $render = '<div ' . $this->get_render_attribute_string('wrapper') . '>';
-        $render .= '<a ' . $this->get_render_attribute_string('advanced_button') . '>' . $this->getButtonText() . '</a>';
+        $render = '<div ' . $this->get_render_attribute_string('wrapper'. $id) . '>';
+        $render .= '<a ' . $this->get_render_attribute_string('advanced_button'. $id) . '>' . $this->getButtonText($id) . '</a>';
         $render .= '</div>';
 
         return $render;
     }
 
-    private function getButtonText()
+    private function getButtonText($id)
     {
         $settings = $this->get_settings_for_display();
 
-        $this->add_render_attribute('content-wrapper', 'class', 'fp-ep-button-content-wrapper');
+        $this->add_render_attribute('content-wrapper'. $id, 'class', 'fp-ep-button-content-wrapper');
 
         if ('left' == $settings['icon_align'] or 'right' == $settings['icon_align']) {
-            $this->add_render_attribute('content-wrapper', 'class', 'fp-flex fp-flex-middle fp-flex-center');
+            $this->add_render_attribute('content-wrapper'. $id, 'class', 'fp-flex fp-flex-middle fp-flex-center');
         }
-        $this->add_render_attribute('content-wrapper', 'class', ('top' == $settings['icon_align']) ? 'fp-flex fp-flex-column' : '');
-        $this->add_render_attribute('content-wrapper', 'class', ('bottom' == $settings['icon_align']) ? 'fp-flex fp-flex-column-reverse' : '');
-        $this->add_render_attribute('content-wrapper', 'data-text', esc_attr($settings['text']));
+        $this->add_render_attribute('content-wrapper'. $id, 'class', ('top' == $settings['icon_align']) ? 'fp-flex fp-flex-column' : '');
+        $this->add_render_attribute('content-wrapper'. $id, 'class', ('bottom' == $settings['icon_align']) ? 'fp-flex fp-flex-column-reverse' : '');
+        $this->add_render_attribute('content-wrapper'. $id, 'data-text', esc_attr($settings['text']));
 
-        $this->add_render_attribute('icon-align', 'class', 'elementor-align-icon-' . $settings['icon_align']);
-        $this->add_render_attribute('icon-align', 'class', 'fp-ep-button-icon');
+        $this->add_render_attribute('icon-align'. $id, 'class', 'elementor-align-icon-' . $settings['icon_align']);
+        $this->add_render_attribute('icon-align'. $id, 'class', 'fp-ep-button-icon');
 
-        $this->add_render_attribute('text', 'class', 'fp-ep-button-text');
-        $this->add_inline_editing_attributes('text', 'none');
+        $this->add_render_attribute('text'. $id, 'class', 'fp-ep-button-text');
+        $this->add_inline_editing_attributes('text'. $id, 'none');
 
         $migrated = isset($settings['__fa4_migrated']['button_icon']);
         $is_new = empty($settings['icon']) && Icons_Manager::is_migration_allowed();
 
         ob_start();
         ?>
-      <div <?php echo $this->get_render_attribute_string('content-wrapper'); ?>>
+      <div <?php echo $this->get_render_attribute_string('content-wrapper'. $id); ?>>
           <?php if (!empty($settings['button_icon']['value'])) : ?>
             <div
                 class="fp-ep-button-icon fp-flex-center fp-flex-align-<?php echo esc_attr($settings['icon_align']); ?>">
@@ -177,7 +186,7 @@ class Table extends AbstractTable
               </div>
             </div>
           <?php endif; ?>
-        <div <?php echo $this->get_render_attribute_string('text'); ?>>
+        <div <?php echo $this->get_render_attribute_string('text'. $id); ?>>
 
           <span class="avdbtn-text"><?php echo esc_html($settings['text']); ?></span>
 
