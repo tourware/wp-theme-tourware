@@ -241,18 +241,40 @@ class Title extends Widget
         $title_html = sprintf('<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag($settings['header_size']), $this->get_render_attribute_string('title'), $title);
         if ($settings['form_id'] !== '' && $data) {
             if ($settings['airline_field_id'] && $data->airline_name) {
+                $airlineFormId = 'form-field-' . $settings['airline_field_id'];
                 $this->add_render_attribute('input_airline', 'data-pafe-form-builder-form-id', $settings['form_id']);
+                $this->add_render_attribute('input_airline', 'data-pafe-form-builder-default-value', $data->airline_name);
                 $this->add_render_attribute('input_airline', 'name', 'form_fields[' . $settings['airline_field_id'] . ']');
                 $this->add_render_attribute('input_airline', 'value', $data->airline_name);
                 $this->add_render_attribute('input_airline', 'type', 'hidden');
+                $this->add_render_attribute('input_airline', 'id', $airlineFormId);
+
+                $this->add_render_attribute('label_airline', 'for', $airlineFormId);
+                $this->add_render_attribute('label_airline', 'class', 'elementor-field-label');
+                $this->add_render_attribute('label_airline', 'style', 'display:none');
+
+                $title_html .= '<div class="elementor-field-group elementor-field-group-' . $settings['airline_field_id'] . '">';
+                $title_html .= '<label ' . $this->get_render_attribute_string('label_airline') . '>Airline</label>';
                 $title_html .= '<input ' . $this->get_render_attribute_string('input_airline') . '>';
+                $title_html .= '</div>';
             }
             if ($settings['airport_field_id'] && $data->zielort) {
+                $airportFormId = 'form-field-' . $settings['airport_field_id'];
                 $this->add_render_attribute('input_airport', 'data-pafe-form-builder-form-id', $settings['form_id']);
+                $this->add_render_attribute('input_airport', 'data-pafe-form-builder-default-value', $data->zielort);
                 $this->add_render_attribute('input_airport', 'name', 'form_fields[' . $settings['airport_field_id'] . ']');
                 $this->add_render_attribute('input_airport', 'value', $data->zielort);
                 $this->add_render_attribute('input_airport', 'type', 'hidden');
+                $this->add_render_attribute('input_airport', 'id', $airportFormId);
+
+                $this->add_render_attribute('label_airport', 'for', $airportFormId);
+                $this->add_render_attribute('label_airport', 'class', 'elementor-field-label');
+                $this->add_render_attribute('label_airport', 'style', 'display:none');
+
+                $title_html .= '<div class="elementor-field-group elementor-field-group-' . $settings['airport_field_id'] . '">';
+                $title_html .= '<label ' . $this->get_render_attribute_string('label_airport') . '>Airport</label>';
                 $title_html .= '<input ' . $this->get_render_attribute_string('input_airport') . '>';
+                $title_html .= '</div>';
             }
         }
 
