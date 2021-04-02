@@ -2,10 +2,6 @@
 
 namespace Tourware;
 
-use Cassandra\Date;
-use Tourware\Elementor;
-use \Elementor\Plugin;
-
 class Theme
 {
     /**
@@ -28,9 +24,6 @@ class Theme
      * @return \Tourware\Theme
      */
     public function run() {
-        $elementor = new Elementor();
-        $elementor->init();
-
         add_filter( 'query_vars', function($vars) {
             $vars[] = 'booking';
             return $vars;
@@ -43,17 +36,6 @@ class Theme
 
             $wp_rewrite->rules = $rules + $wp_rewrite->rules;
         });
-
-        add_action( 'elementor/dynamic_tags/register_tags', function( $dynamic_tags ) {
-            \Elementor\Plugin::$instance->dynamic_tags->register_group( 'tourware', [
-                'title' => 'tourware'
-            ] );
-
-            $dynamic_tags->register_tag( Elementor\DynamicTag\Option::class );
-            $dynamic_tags->register_tag( Elementor\DynamicTag\Travel::class );
-            $dynamic_tags->register_tag( Elementor\DynamicTag\AdditionalFields::class );
-            $dynamic_tags->register_tag( Elementor\DynamicTag\Image::class );
-        } );
 
         add_action( 'init', function () {
             register_taxonomy_for_object_type( 'category', 'page' );
@@ -77,29 +59,6 @@ class Theme
             wp_register_script('tourware-travel-map', get_parent_theme_file_uri() . '/tourware-resources/js/widget/travel/Map.js', ['lodash-adt']);
             wp_register_script('tourware-travel-dates', get_parent_theme_file_uri() . '/tourware-resources/js/widget/travel/dates-accordion.js', ['jquery']);
         });
-
-        add_action( 'elementor/widgets/widgets_registered', function() {
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Gallery() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Listing() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\VueListing() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Services() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Itinerary() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Details() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Map() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Dates() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\AdditionalFields() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Image() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Accommodations() );
-
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Accommodation\Listing() );
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Accommodation\Details() );
-
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Destination\Listing() );
-
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Flightprice\Table() );
-
-            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Search() );
-        } );
 
         // Legacy
         add_filter( 'kava-theme/customizer/options', array(new Customizer\Typography(), 'register'), 99 );
