@@ -324,3 +324,30 @@
         }
     }
 }
+
+@media(min-width: 944px) {
+    .hidden-desktop {
+        display: none;
+    }
+}
+
+@media(max-width: 943px) {
+    .hidden-mobile {
+        display: none;
+    }
+
+    .fp-ep-button {
+        display: block;
+        width: 100%;
+    }
+
+    .tourware-table {
+        thead {
+            display: none;
+        }
+
+        tbody {
+
+        }
+    }
+}
