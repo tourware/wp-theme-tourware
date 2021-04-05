@@ -352,15 +352,6 @@ function tyto_scripts()
         null,
         true
     );
-
-    /* COLLAPSER */
-    wp_register_script(
-        'collapser-script',
-        \Tourware\Path::getResourcesFolder() . '/js/jquery.collapser.min.js',
-        array('jquery'),
-        false,
-        true
-    );
 }
 
 add_action('wp_enqueue_scripts', 'tyto_scripts');

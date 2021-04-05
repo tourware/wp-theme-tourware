@@ -44,21 +44,10 @@ class Theme
 
         add_action( 'template_redirect', function () {
             if ('tytotravels' == get_post_type() && post_password_required()) {
-                get_template_part('/tourware-resources/layouts/travel/protected');
+                get_template_part('template-parts/single-tytotravels', 'protected');
                 die;
             }
         }, 99 );
-
-        add_action( 'wp_enqueue_scripts', function () {
-            wp_register_script('tourware-js', get_parent_theme_file_uri() . '/public/tourware.js', 'vue', null, true);
-            wp_enqueue_style('tourware', get_parent_theme_file_uri() . '/public/tourware.css', null, time());
-        } );
-
-        add_action('elementor/frontend/before_register_scripts', function () {
-            wp_register_script('lodash-adt', get_parent_theme_file_uri() . '/tourware-resources/js/widget/travel/lodash.js', ['jquery']);
-            wp_register_script('tourware-travel-map', get_parent_theme_file_uri() . '/tourware-resources/js/widget/travel/Map.js', ['lodash-adt']);
-            wp_register_script('tourware-travel-dates', get_parent_theme_file_uri() . '/tourware-resources/js/widget/travel/dates-accordion.js', ['jquery']);
-        });
 
         // Legacy
         add_filter( 'kava-theme/customizer/options', array(new Customizer\Typography(), 'register'), 99 );
