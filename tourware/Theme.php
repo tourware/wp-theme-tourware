@@ -90,6 +90,7 @@ class Theme
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\AdditionalFields() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Image() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Accommodations() );
+            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Breadcrumbs() );
 
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Accommodation\Listing() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Accommodation\Details() );
