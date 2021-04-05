@@ -81,6 +81,7 @@ class Theme
         add_action( 'elementor/widgets/widgets_registered', function() {
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Gallery() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Listing() );
+            Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\VueListing() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Services() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Itinerary() );
             Plugin::instance()->widgets_manager->register_widget_type( new \Tourware\Elementor\Widget\Travel\Details() );
