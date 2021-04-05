@@ -1,0 +1,16 @@
+.tourware-breadcrumbs {
+    display: flex;
+    flex-direction: column;
+
+    &__content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+
+    }
+
+    &__browse {
+        margin-right: 5px;
+    }
+}
