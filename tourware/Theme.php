@@ -24,31 +24,6 @@ class Theme
      * @return \Tourware\Theme
      */
     public function run() {
-        add_filter( 'query_vars', function($vars) {
-            $vars[] = 'booking';
-            return $vars;
-        } );
-
-        add_action('generate_rewrite_rules', function($wp_rewrite) {
-            $rules = array(
-                'buchung\/([0-9a-zA-Z-]+)?[\/]?$' => 'index.php?p=4391&booking=' . $wp_rewrite->preg_index(1)
-            );
-
-            $wp_rewrite->rules = $rules + $wp_rewrite->rules;
-        });
-
-        add_action( 'init', function () {
-            register_taxonomy_for_object_type( 'category', 'page' );
-            register_taxonomy_for_object_type('post_tag', 'page');
-        } );
-
-        add_action( 'template_redirect', function () {
-            if ('tytotravels' == get_post_type() && post_password_required()) {
-                get_template_part('template-parts/single-tytotravels', 'protected');
-                die;
-            }
-        }, 99 );
-
         // Legacy
         add_filter( 'kava-theme/customizer/options', array(new Customizer\Typography(), 'register'), 99 );
         add_filter( 'kava-theme/customizer/options', array(new Customizer\Page\Header(), 'register'), 99 );
