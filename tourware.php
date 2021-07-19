@@ -655,36 +655,36 @@ function tyto_single_brick_header_layout() {
     return get_theme_mod('single_brick_header_layout', 'layout-1') == 'layout-2';
 }
 
-function wpse_custom_menu_order( $menu_ord ) {
-    if ( !$menu_ord ) return true;
-
-    return array(
-        'index.php', // Dashboard
-
-        'separator1', // First separator
-        'edit.php', // Posts
-        'edit.php?post_type=tytocontinents', // Continents
-        'edit.php?post_type=tytodestinations', // Destinations
-        'edit.php?post_type=tytoregions', // Regions
-        'edit.php?post_type=tytotravels', // Travels
-        'edit.php?post_type=tytoaccommodations', // Accommodations
-        'edit.php?post_type=tytotravelsbricks', // Bricks
-        'upload.php', // Media
-        'link-manager.php', // Links
-        'edit-comments.php', // Comments
-        'edit.php?post_type=page', // Pages
-
-        'separator2', // Second separator
-        'themes.php', // Appearance
-        'plugins.php', // Plugins
-        'users.php', // Users
-        'tools.php', // Tools
-        'options-general.php', // Settings
-        'separator-last', // Last separator
-    );
-}
-add_filter( 'custom_menu_order', 'wpse_custom_menu_order', 10, 1 );
-add_filter( 'menu_order', 'wpse_custom_menu_order', 10, 1 );
+//function wpse_custom_menu_order( $menu_ord ) {
+//    if ( !$menu_ord ) return true;
+//
+//    return array(
+//        'index.php', // Dashboard
+//
+//        'separator1', // First separator
+//        'edit.php', // Posts
+//        'edit.php?post_type=tytocontinents', // Continents
+//        'edit.php?post_type=tytodestinations', // Destinations
+//        'edit.php?post_type=tytoregions', // Regions
+//        'edit.php?post_type=tytotravels', // Travels
+//        'edit.php?post_type=tytoaccommodations', // Accommodations
+//        'edit.php?post_type=tytotravelsbricks', // Bricks
+//        'upload.php', // Media
+//        'link-manager.php', // Links
+//        'edit-comments.php', // Comments
+//        'edit.php?post_type=page', // Pages
+//
+//        'separator2', // Second separator
+//        'themes.php', // Appearance
+//        'plugins.php', // Plugins
+//        'users.php', // Users
+//        'tools.php', // Tools
+//        'options-general.php', // Settings
+//        'separator-last', // Last separator
+//    );
+//}
+//add_filter( 'custom_menu_order', 'wpse_custom_menu_order', 10, 1 );
+//add_filter( 'menu_order', 'wpse_custom_menu_order', 10, 1 );
 
 add_filter( 'tyto_before_update_item_travels', function ($travel) {
     // itinerary
